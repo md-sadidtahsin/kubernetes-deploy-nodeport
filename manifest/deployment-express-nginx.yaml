@@ -1,0 +1,36 @@
+# 2. Deployment: Sidecar Pattern (Nginx + Express in one Pod)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-app-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: express-web
+  template:
+    metadata:
+      labels:
+        app: express-web
+    spec:
+      containers:
+      # The Nginx Container (Proxy)
+      - name: nginx-proxy
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+
+      # Your Express App Container
+      - name: express-app
+        image: mdsadidtahsin/ostad-express-app:latest
+        ports:
+        - containerPort: 3030
+
+      volumes:
+      - name: config-volume
+        configMap:
+          name: nginx-config
