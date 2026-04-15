@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  ostad-express-app:
+    build: .
+    container_name: ostad-express-app
+    image: mdsadidtahsin/ostad-express-app:latest
+    restart: always
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    depends_on:
+      - ostad-express-app
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
